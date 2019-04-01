@@ -1,0 +1,29 @@
+# #Enable the traefik dashboard to be accessible
+# #also shows how to use a password to protect a site
+# #via basicAuth
+
+
+# [backends]
+#   [backends.traefik]
+#     [backends.traefik.servers]
+#       [backends.traefik.servers.server1]
+#         url = "http://localhost:8080"
+
+
+# [frontends]
+#   [frontends.traefik]
+#     backend = "traefik"
+#     #update password http://aspirine.org/htpasswd_en.html
+#     # in box 1 format is 
+#     # username <space> password
+#     # in box2 select bcrypt and click generate password
+#     # put output in below quotes in basicAuth section
+
+#     #the below username: admin password: admin
+#     basicAuth = [
+#       "admin:$2y$11$zVvqdUDv0xEsl8TpKgnCwOFQ2b8Qwz9Pmk8whVkCtPuzpc7EfbYSW",
+#     ]
+#       [frontends.traefik.routes.traefik]
+#         rule = "HostRegexp:traefik.{restdomain:[\\-a-z0-9.]+}"
+
+

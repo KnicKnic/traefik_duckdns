@@ -1,0 +1,26 @@
+
+[backends]
+  [backends.nginx]
+    [backends.nginx.servers]
+      [backends.nginx.servers.server1]
+        url = "http://nginx:80"
+
+
+
+[frontends]
+  [frontends.nginx]
+    backend = "nginx"
+    #passing host header is not necessary in this example, but may be needed by certain websites
+    passHostHeader = true
+    
+      [frontends.nginx.routes.nginx]
+        #matches www.subdomain.duckdns.org & subdomain.duckdns.org where subdomain is a wildcard
+        # would match www.test.duckdns.org & test.duckdns.org
+        rule = "HostRegexp:www.{subdomain:[^.]+}.duckdns.org,{subdomain:[^.]+}.duckdns.org"
+        
+        #matches just www.test.duckdns.org
+        #rule = "HostRegexp:www.{subdomain:[^.]+}.duckdns.org"
+
+        #matches just test.duckdns.org
+        #rule = "HostRegexp:{subdomain:[^.]+}.duckdns.org"
+

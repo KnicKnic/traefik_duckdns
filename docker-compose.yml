@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  updateDuckDNSIP:
+    image: busybox
+    command: /bin/sh -c "while true; do wget -O - 'https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip='; sleep 300; done"
+    restart: always
+  traefik:
+    image: traefik:v1.7.9
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    command: 
+      - "--api"
+      - "--debug"
+      - "--acme.domains=*.${DUCKDNS_SUBDOMAIN}.duckdns.org,${DUCKDNS_SUBDOMAIN}.duckdns.org"
+      - "--configfile=/config/traefik.toml"
+    volumes:
+      - ./config:/config
+      - ./rules:/rules
+  nginx:
+    image: nginx
+    restart: always
