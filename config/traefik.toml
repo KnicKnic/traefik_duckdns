@@ -18,6 +18,8 @@ storage = "/config/acme.json"
 entryPoint = "https"
   [acme.dnsChallenge]
   provider = "duckdns"
+  # # uncomment out below if you do not have ability to query dns records inside your network 
+  # delayBeforeCheck = 30
 
 [file]
   watch = true

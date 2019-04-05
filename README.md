@@ -17,13 +17,13 @@ Short example of setting up TLS end to end using traefik & duckdns for free wild
     1. be patient it can take up to 5 minutes for certs to get populated (until then you will get untrusted cert)
     1. test by going to `https://subdomain.duckdns.org` you should see the nginx banner
 
-## Additional steps
-1. ensure webtraffic (https port 443, optionally http port 80) can get to your server
+## Additional steps (may be appropriate)
+1. ensure web traffic (https port 443, optionally http port 80) can get to your server
     1. http://portforward.com
 1. add more forwarding rules
     1. copy and modify sample rules/nginx.toml into rules/copy.toml
         1. replace every instance of `nginx` with `copy` or some other word
-        1. repace `url = "http://nginx:80"` with your backend url
+        1. replace `url = "http://nginx:80"` with your backend url
         1. replace `rule = "HostRegexp:www.{subdomain:[^.]+}.duckdns.org,{subdomain:[^.]+}.duckdns.org"` with your new name like `rule = "HostRegexp:copy.{subdomain:[^.]+}.duckdns.org"`
         1. read more info from traefik 
             1. https://docs.traefik.io/basics/#frontends
@@ -34,4 +34,21 @@ Short example of setting up TLS end to end using traefik & duckdns for free wild
         1. uncomment everything (only remove 1 # per line)
         1. update password as explained in the file
     1. go to `https://traefik.subdomain.duckdns.org` and enter username & password
+1. Allow traefik to work in proxied / firewall network
+    1. You will probably want to do 2 things
+        1. Complete cert challenges by purely delaying dns checks.
+            1. in config/traefik.toml uncomment delayBeforeCheck
+            1. Do this if DNS queries are blocked
+        1. Not auto update the IP
+            1. in docker-compose.yml comment out the whole updateDuckDNSIP section
+            1. If you are exposing a private computer that is not routable we do not want to override it with our pubic NAT address
+                1. Useful in scenarios where you only want to access the website inside a corprate network (useful for TLS for private docker registries)
+1. Write a project that extends this one.
+    1. example: https://github.com/KnicKnic/myq-garage-server
+1. Learn how to have traefik watch new containers so you do not need to update rules
+    1. I only wrote about rules, I did this for a few reasons
+        1. It works in non-container scenarios you can reference any ip, or hostname for the backend
+        1. Security / Multiplatform, you do not have to worry about security getting the docker socket, or how to read the docker socket in windows
+    1. read more about adding labels and auto configuring traefik here
+        1. https://medium.com/@joshuaavalon/setup-traefik-step-by-step-406792afe9b2
     

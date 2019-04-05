@@ -2,6 +2,9 @@ version: '2'
 
 services:
   updateDuckDNSIP:
+    # used to update duckdns
+    # if you have a static IP, yu can comment this out
+    # using busybox due to it having an image for almost every platform
     image: busybox
     command: /bin/sh -c "while true; do wget -O - 'https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip='; sleep 300; done"
     restart: always
@@ -22,5 +25,7 @@ services:
       - ./config:/config
       - ./rules:/rules
   nginx:
+    #used purely for tests purposes
+    #chose nginx because it has a image for almost every platform
     image: nginx
     restart: always
