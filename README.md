@@ -1,9 +1,18 @@
 # traefik_duckdns
-Short example of setting up TLS end to end using traefik & duckdns for free wildcard subdomain & dynamic ip support for a website.
+Short example of setting up TLS end to end using traefik & duckdns for free wildcard subdomain & dynamic ip support for a website. 
+
+Websites `https://*.example.duckdns.org` and `https://example.duckdns.org` 
+
+Useful for
+1. You want simple certs for an API or website
+1. Server on a home internet with an ISP that changes your IP.
+1. Don't want to or can't expose port 80 or even 443.
+    1. This can be useful for a computer on a private network that has internet through NAT or proxy.
+        1. I use it to secure my private internal docker registry
 
 ## Steps
 1. copy this repository into the current directory
-    1. Linux - `wget -nc -O traefik_duckdns-github.zip https://github.com/KnicKnic/traefik_duckdns/archive/master.zip && unzip -n traefik_duckdns-github.zip -d . && cp -rn traefik_duckdns-master/* . && cp -rn traefik_duckdns-master/.??* .` 
+    1. Linux - `docker run --rm -v $(pwd):/data -u "${UID}" busybox sh -c "wget -nc -O - https://github.com/KnicKnic/traefik_duckdns/archive/master.zip | unzip - -d /tmp && cp -r /tmp/traefik_duckdns-master/* /data/ && cp -r /tmp/traefik_duckdns-master/.??* /data/"` 
     1. Windows - `curl.exe -L -o traefik_duckdns-github.zip https://github.com/KnicKnic/traefik_duckdns/archive/master.zip ;
  Expand-Archive -DestinationPath . traefik_duckdns-github.zip ;  cp -r .\traefik_duckdns-master\* .`
 1. ensure you have docker & docker-compose installed
@@ -20,7 +29,9 @@ Short example of setting up TLS end to end using traefik & duckdns for free wild
 ## Additional steps (may be appropriate)
 1. ensure web traffic (https port 443, optionally http port 80) can get to your server
     1. http://portforward.com
-1. add more forwarding rules
+1. add / modify forwarding rules
+    1. if you just want to change `https://subdomain.duckdns.org` to point to your backend, modify rules/nginx.toml
+        1. replace `url = "http://nginx:80"` with your backend url
     1. copy and modify sample rules/nginx.toml into rules/copy.toml
         1. replace every instance of `nginx` with `copy` or some other word
         1. replace `url = "http://nginx:80"` with your backend url
@@ -43,10 +54,11 @@ Short example of setting up TLS end to end using traefik & duckdns for free wild
             1. in docker-compose.yml comment out the whole updateDuckDNSIP section
             1. If you are exposing a private computer that is not routable we do not want to override it with our pubic NAT address
                 1. Useful in scenarios where you only want to access the website inside a corprate network (useful for TLS for private docker registries)
+                1. You must manually set the ip for the domain name in duckdns.org
 1. Write a project that extends this one.
     1. example: https://github.com/KnicKnic/myq-garage-server
 1. Learn how to have traefik watch new containers so you do not need to update rules
-    1. I only wrote about rules, I did this for a few reasons
+    1. I only wrote about file based rules, I did this for a few reasons
         1. It works in non-container scenarios you can reference any ip, or hostname for the backend
         1. Security / Multiplatform, you do not have to worry about security getting the docker socket, or how to read the docker socket in windows
     1. read more about adding labels and auto configuring traefik here
